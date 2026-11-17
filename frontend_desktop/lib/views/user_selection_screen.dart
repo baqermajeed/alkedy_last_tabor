@@ -28,51 +28,29 @@ class _UserSelectionScreenState extends State<UserSelectionScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    // Logo with background tooth icon
-                    SizedBox(
-                      height: 300.h,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          // Large faint tooth icon in background
-                          Positioned(
-                            child: Opacity(
-                              opacity: 0.85,
-                              child: Image.asset(
-                                'assets/images/tooth_logo.png',
-                                width: 400.w,
-                                height: 400.h,
-                                fit: BoxFit.contain,
-                              ),
+                    // Logo
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 200.w,
+                      height: 200.h,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 200.w,
+                          height: 200.h,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primaryLight.withValues(
+                              alpha: 0.3,
                             ),
                           ),
-                          // Main logo
-                          Image.asset(
-                            'assets/images/logo.png',
-                            width: 200.w,
-                            height: 200.h,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 200.w,
-                                height: 200.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.primaryLight.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.local_hospital,
-                                  size: 100.sp,
-                                  color: AppColors.primary,
-                                ),
-                              );
-                            },
+                          child: Icon(
+                            Icons.local_hospital,
+                            size: 100.sp,
+                            color: AppColors.primary,
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                     SizedBox(height: 40.h),
                     // "اختر نوع المستخدم" text

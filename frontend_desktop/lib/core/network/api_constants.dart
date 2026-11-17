@@ -1,4 +1,4 @@
-class ApiConstants {
+﻿class ApiConstants {
   /// Base URL for all API calls.
   /// Default: `https://sys-api.farahdent.com`.
   /// Use `--dart-define=API_BASE_URL=<url>` or `--dart-define=API_HOST=<host>`
@@ -48,7 +48,7 @@ class ApiConstants {
 
   /// قيم الفرع عند إضافة موعد من مركز الاتصالات.
   static const String callCenterBranchFarahNajaf =
-      'farah_najaf'; // عيادة فرح النجف → backend
+      'farah_najaf'; // عيادة الكندي النجف → backend
   static const String callCenterBranchKendyBaghdad =
       'kendy_baghdad'; // عيادة الكندي بغداد → backend_kendy
 

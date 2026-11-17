@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 import 'dart:ui';
 import 'package:desktop_multi_window/desktop_multi_window.dart';
 import 'package:flutter/material.dart';
@@ -157,7 +157,7 @@ Future<void> _configureDisplayWindow(
     }
 
     await windowManager.ensureInitialized();
-    await windowManager.setTitle('شاشة الطابور - عيادة فرح');
+    await windowManager.setTitle('شاشة الطابور - عيادة الكندي');
 
     // انقل للشاشة المستهدفة أولاً ثم فعّل ملء الشاشة على نفس الشاشة
     await windowManager.setFullScreen(false);

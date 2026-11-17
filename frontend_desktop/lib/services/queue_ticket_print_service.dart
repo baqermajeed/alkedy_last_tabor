@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
 
@@ -380,7 +380,7 @@ $data = [System.IO.File]::ReadAllBytes($binPath)
 Add-Type -TypeDefinition @"
 using System;
 using System.Runtime.InteropServices;
-public class FarahRawPrint {
+public class AlKindiRawPrint {
   [StructLayout(LayoutKind.Sequential, CharSet=CharSet.Ansi)]
   public class DOCINFOA {
     [MarshalAs(UnmanagedType.LPStr)] public string pDocName;
@@ -408,7 +408,7 @@ public class FarahRawPrint {
       return "FAIL OpenPrinter err=" + Marshal.GetLastWin32Error();
     }
     var di = new DOCINFOA();
-    di.pDocName = "FarahQueueTicket";
+    di.pDocName = "AlKindiQueueTicket";
     di.pDataType = "RAW";
     if (!StartDocPrinter(h, 1, di)) {
       var err = Marshal.GetLastWin32Error();
@@ -435,7 +435,7 @@ public class FarahRawPrint {
 }
 "@
 
-$result = [FarahRawPrint]::Send($printer, $data)
+$result = [AlKindiRawPrint]::Send($printer, $data)
 Write-Output $result
 if ($result -notlike 'OK*') { exit 1 }
 ''';
@@ -529,14 +529,14 @@ $paperW = [int]$args[2]
 $paperH = [int]$args[3]
 
 $doc = New-Object System.Drawing.Printing.PrintDocument
-$doc.DocumentName = 'FarahQueueTicket'
+$doc.DocumentName = 'AlKindiQueueTicket'
 $doc.PrinterSettings.PrinterName = $printer
 if (-not $doc.PrinterSettings.IsValid) { throw "Printer not valid: $printer" }
 $doc.PrintController = New-Object System.Drawing.Printing.StandardPrintController
 $doc.DefaultPageSettings.Margins = New-Object System.Drawing.Printing.Margins(0,0,0,0)
 $doc.DefaultPageSettings.Landscape = $false
 
-$paper = New-Object System.Drawing.Printing.PaperSize('FarahTicketTight', $paperW, $paperH)
+$paper = New-Object System.Drawing.Printing.PaperSize('AlKindiTicketTight', $paperW, $paperH)
 $paper.RawKind = 256
 $doc.DefaultPageSettings.PaperSize = $paper
 

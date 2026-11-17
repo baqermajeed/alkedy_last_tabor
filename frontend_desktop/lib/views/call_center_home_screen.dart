@@ -1,4 +1,4 @@
-import 'dart:async';
+﻿import 'dart:async';
 
 import 'dart:ui' as ui;
 
@@ -48,9 +48,9 @@ const List<String> _bookingPlatforms = [
   'اتصال',
 ];
 
-/// الفروع عند إضافة موعد: فرح النجف → backend، الكندي بغداد → backend_kendy
+/// الفروع عند إضافة موعد: الكندي النجف → backend، الكندي بغداد → backend_kendy
 const List<MapEntry<String, String>> _callCenterBranches = [
-  MapEntry(ApiConstants.callCenterBranchFarahNajaf, 'عيادة فرح النجف'),
+  MapEntry(ApiConstants.callCenterBranchFarahNajaf, 'عيادة الكندي النجف'),
   MapEntry(ApiConstants.callCenterBranchKendyBaghdad, 'عيادة الكندي بغداد'),
 ];
 
@@ -1983,7 +1983,7 @@ class _CallCenterHomeScreenState extends State<CallCenterHomeScreen> {
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        'مركز فرح التخصصي لطب الاسنان',
+                        'مركز الكندي التخصصي لطب الاسنان',
                         maxLines: 1,
                         softWrap: false,
                         textAlign: TextAlign.center,

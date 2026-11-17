@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -5020,7 +5020,7 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        'مركز فرح التخصصي لطب الاسنان',
+                        'مركز الكندي التخصصي لطب الاسنان',
                         maxLines: 1,
                         softWrap: false,
                         textAlign: TextAlign.center,

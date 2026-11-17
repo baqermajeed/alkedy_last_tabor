@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:async';
 import 'dart:typed_data';
 import 'dart:ui' as ui;
@@ -4169,7 +4169,7 @@ class _ReceptionHomeScreenState extends State<ReceptionHomeScreen>
                     child: FittedBox(
                       fit: BoxFit.scaleDown,
                       child: Text(
-                        'مركز فرح التخصصي لطب الاسنان',
+                        'مركز الكندي التخصصي لطب الاسنان',
                         maxLines: 1,
                         softWrap: false,
                         textAlign: TextAlign.center,
@@ -6625,7 +6625,7 @@ class _ReceptionHomeScreenState extends State<ReceptionHomeScreen>
                         SizedBox(height: 24),
                         // العنوان العربي
                         Text(
-                          'عيادة فرح التخصصية لطب الاسنان',
+                          'عيادة الكندي التخصصية لطب الاسنان',
                           style: GoogleFonts.cairo(
                             fontSize: 36,
                             fontWeight: FontWeight.w900,
@@ -6635,7 +6635,7 @@ class _ReceptionHomeScreenState extends State<ReceptionHomeScreen>
                         ),
                         // العنوان الإنجليزي
                         Text(
-                          'Farah Dental Center',
+                          'Al-Kindi Dental Center',
                           style: GoogleFonts.cairo(
                             fontSize: 36,
                             fontWeight: FontWeight.bold,

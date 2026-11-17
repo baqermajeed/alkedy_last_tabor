@@ -1,4 +1,4 @@
-import 'package:frontend_desktop/core/network/api_constants.dart';
+﻿import 'package:frontend_desktop/core/network/api_constants.dart';
 import 'package:frontend_desktop/core/network/api_exception.dart';
 import 'package:frontend_desktop/models/call_center_appointment_model.dart';
 import 'package:frontend_desktop/services/api_service.dart';
@@ -178,7 +178,7 @@ class CallCenterService {
     }
   }
 
-  /// [branch]: ApiConstants.callCenterBranchFarahNajaf → backend (فرح النجف)،
+  /// [branch]: ApiConstants.callCenterBranchFarahNajaf → backend (الكندي النجف)،
   /// ApiConstants.callCenterBranchKendyBaghdad → backend_kendy (الكندي بغداد).
   /// عند اختيار الكندي يُحفظ الموعد في الكندي فقط (يظهر مرة واحدة في الجدول).
   Future<void> createAppointment({

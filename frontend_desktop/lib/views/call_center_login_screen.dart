@@ -41,51 +41,29 @@ class _CallCenterLoginScreenState extends State<CallCenterLoginScreen> {
                   children: [
                     SizedBox(height: 56.h),
                     SizedBox(height: 12.h),
-                    // Logo with background tooth icon
-                    SizedBox(
-                      height: 250.h,
-                      child: Stack(
-                        alignment: Alignment.center,
-                        clipBehavior: Clip.none,
-                        children: [
-                          // Large faint tooth icon in background
-                          Positioned(
-                            child: Opacity(
-                              opacity: 0.85,
-                              child: Image.asset(
-                                'assets/images/tooth_logo.png',
-                                width: 280.w,
-                                height: 280.h,
-                                fit: BoxFit.contain,
-                              ),
+                    // Logo
+                    Image.asset(
+                      'assets/images/logo.png',
+                      width: 180.w,
+                      height: 180.h,
+                      fit: BoxFit.contain,
+                      errorBuilder: (context, error, stackTrace) {
+                        return Container(
+                          width: 180.w,
+                          height: 180.h,
+                          decoration: BoxDecoration(
+                            shape: BoxShape.circle,
+                            color: AppColors.primaryLight.withValues(
+                              alpha: 0.3,
                             ),
                           ),
-                          // Main logo
-                          Image.asset(
-                            'assets/images/logo.png',
-                            width: 160.w,
-                            height: 160.h,
-                            fit: BoxFit.contain,
-                            errorBuilder: (context, error, stackTrace) {
-                              return Container(
-                                width: 160.w,
-                                height: 160.h,
-                                decoration: BoxDecoration(
-                                  shape: BoxShape.circle,
-                                  color: AppColors.primaryLight.withValues(
-                                    alpha: 0.3,
-                                  ),
-                                ),
-                                child: Icon(
-                                  Icons.local_hospital,
-                                  size: 80.sp,
-                                  color: AppColors.primary,
-                                ),
-                              );
-                            },
+                          child: Icon(
+                            Icons.local_hospital,
+                            size: 80.sp,
+                            color: AppColors.primary,
                           ),
-                        ],
-                      ),
+                        );
+                      },
                     ),
                     SizedBox(height: 20.h),
                     // Title

@@ -1,4 +1,4 @@
-import 'dart:io';
+﻿import 'dart:io';
 import 'dart:math' as math;
 import 'dart:ui' as ui;
 
@@ -211,7 +211,7 @@ class _QueueDisplayScreenState extends State<QueueDisplayScreen> {
         ),
         SizedBox(height: 6.h),
         Text(
-          'عيادة فرح',
+          'عيادة الكندي',
           textDirection: ui.TextDirection.rtl,
           style: GoogleFonts.cairo(
             fontSize: 52.sp,

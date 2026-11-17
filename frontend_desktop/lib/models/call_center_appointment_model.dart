@@ -1,4 +1,4 @@
-import 'package:frontend_desktop/core/network/api_constants.dart';
+﻿import 'package:frontend_desktop/core/network/api_constants.dart';
 
 class CallCenterAppointmentModel {
   final String id;
@@ -41,7 +41,7 @@ class CallCenterAppointmentModel {
       return 'عيادة الكندي بغداد';
     }
     if (branch == ApiConstants.callCenterBranchFarahNajaf) {
-      return 'عيادة فرح النجف';
+      return 'عيادة الكندي النجف';
     }
     return branch.isNotEmpty ? branch : '-';
   }
