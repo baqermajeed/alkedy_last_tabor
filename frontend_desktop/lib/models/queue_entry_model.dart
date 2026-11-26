@@ -73,24 +73,45 @@ class QueueEntry {
   final int number;
   final String name;
   final QueueEntryStatus status;
+  /// رقم هاتف الزبون (محلي مثل 07xxxxxxxxx) للتواصل عبر واتساب
+  final String phone;
 
   const QueueEntry({
     required this.id,
     required this.number,
     required this.name,
     this.status = QueueEntryStatus.waiting,
+    this.phone = '',
   });
+
+  bool get hasPhone => digitsOnly.isNotEmpty;
+
+  String get digitsOnly => phone.replaceAll(RegExp(r'[^\d]'), '');
+
+  /// رقم واتساب بصيغة دولية بدون + (العراق 964)
+  String get whatsAppNumber {
+    var digits = digitsOnly;
+    if (digits.isEmpty) return '';
+    if (digits.startsWith('00')) digits = digits.substring(2);
+    if (digits.startsWith('0')) digits = '964${digits.substring(1)}';
+    if (digits.startsWith('7') && digits.length == 10) {
+      digits = '964$digits';
+    }
+    return digits;
+  }
 
   QueueEntry copyWith({
     int? number,
     String? name,
     QueueEntryStatus? status,
+    String? phone,
   }) {
     return QueueEntry(
       id: id,
       number: number ?? this.number,
       name: name ?? this.name,
       status: status ?? this.status,
+      phone: phone ?? this.phone,
     );
   }
 
@@ -99,6 +120,7 @@ class QueueEntry {
         'number': number,
         'name': name,
         'status': status.value,
+        'phone': phone,
       };
 
   factory QueueEntry.fromJson(Map<String, dynamic> json) {
@@ -109,6 +131,7 @@ class QueueEntry {
           : int.tryParse('${json['number']}') ?? 0,
       name: json['name']?.toString() ?? '',
       status: QueueEntryStatusX.fromValue(json['status']?.toString()),
+      phone: (json['phone'] ?? json['phoneNumber'] ?? '').toString(),
     );
   }
 }

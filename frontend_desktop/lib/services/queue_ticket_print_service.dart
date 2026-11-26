@@ -13,9 +13,9 @@ import 'package:printing/printing.dart';
 import 'package:windows_printer/windows_printer.dart';
 import 'package:frontend_desktop/core/constants/app_colors.dart';
 
-/// طباعة تذكرة طابور لطابعة Xprinter XP-P323B.
+/// طباعة تذكرة طابور لطابعة Xprinter (مثل XP-P323B).
 ///
-/// ارتفاع التذكرة = ارتفاع محتوى الاسم+الرقم فقط (بدون فراغ سفلي).
+/// بعد الرسم نغذّي الورق إضافياً حتى تخرج التذكرة من فتحة الطابعة بالكامل.
 class QueueTicketPrintService {
   QueueTicketPrintService._();
 
@@ -31,6 +31,12 @@ class QueueTicketPrintService {
   /// عرض الرول 59mm @ 203 DPI
   static const int _ticketWidthDots = 472;
   static const double _dpi = 203;
+
+  /// فراغ أبيض أسفل المحتوى داخل الصورة (~22mm) للتمزيق
+  static const int _tearMarginDots = 176;
+
+  /// تغذية إضافية بعد الطباعة (~20mm) حتى تخرج الورقة من الفتحة
+  static const int _ejectFeedDots = 160;
 
   static Future<void> showPrintPrompt({
     required String name,
@@ -148,8 +154,7 @@ class QueueTicketPrintService {
     const padX = 12.0;
     const padY = 16.0;
     const gap = 12.0;
-    // مسافة بيضاء بعد المحتوى للتمزيق (~12mm @ 203 DPI)
-    const tearMarginDots = 96;
+    const tearMarginDots = _tearMarginDots;
 
     ui.Paragraph buildParagraph({
       required String text,
@@ -298,7 +303,7 @@ class QueueTicketPrintService {
     // محاذاة وسط
     out.add([0x1B, 0x61, 0x01]);
 
-    // GS v 0 m=0 — التغذية = ارتفاع الصورة فقط (بدون أوامر TSPL وبدون feed إضافي)
+    // GS v 0 m=0 — طباعة الصورة النقطية
     out.add([0x1D, 0x76, 0x30, 0x00]);
     out.add([widthBytes & 0xFF, (widthBytes >> 8) & 0xFF]);
     out.add([height & 0xFF, (height >> 8) & 0xFF]);
@@ -319,6 +324,18 @@ class QueueTicketPrintService {
         out.addByte(b);
       }
     }
+
+    // ESC J n — تغذية نقطية بعد الطباعة حتى تخرج الورقة من الفتحة بالكامل
+    // (كثير من الطابعات الحرارية توقف عند رأس الطباعة بدون هذا الأمر)
+    var remaining = _ejectFeedDots;
+    while (remaining > 0) {
+      final chunk = remaining > 255 ? 255 : remaining;
+      out.add([0x1B, 0x4A, chunk]);
+      remaining -= chunk;
+    }
+
+    // LF إضافي كشبكة أمان لبعض موديلات Xprinter
+    out.add([0x0A, 0x0A]);
 
     return out.toBytes();
   }
@@ -516,9 +533,10 @@ if ($result -notlike 'OK*') { exit 1 }
     try {
       await File(bmpPath).writeAsBytes(_rgbaToBmp(rgba, width, height), flush: true);
 
-      // hundredths of inch
+      // hundredths of inch — +~20mm eject حتى تخرج الورقة من الفتحة
       final paperW = (59 / 25.4 * 100).round(); // ~232
-      final paperH = (height / _dpi * 100).round().clamp(60, 400);
+      final paperH =
+          ((height + _ejectFeedDots) / _dpi * 100).round().clamp(80, 500);
 
       const script = r'''
 $ErrorActionPreference = 'Stop'

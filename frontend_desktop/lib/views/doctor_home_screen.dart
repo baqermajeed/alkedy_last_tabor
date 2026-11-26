@@ -1411,9 +1411,12 @@ class _DoctorHomeScreenState extends State<DoctorHomeScreen>
       );
 
       await Printing.layoutPdf(
+        name: 'باركود_مريض',
+        format: labelFormat,
         onLayout: (PdfPageFormat format) async => pdf.save(),
       );
     } catch (e) {
+      debugPrint('❌ [Doctor] QR print failed: $e');
       Get.snackbar(
         'خطأ',
         'حدث خطأ أثناء طباعة الباركود',

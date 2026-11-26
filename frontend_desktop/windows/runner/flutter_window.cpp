@@ -3,6 +3,7 @@
 #include <optional>
 
 #include "flutter/generated_plugin_registrant.h"
+#include "queue_display_plugin_registrant.h"
 #include "desktop_multi_window/desktop_multi_window_plugin.h"
 
 FlutterWindow::FlutterWindow(const flutter::DartProject& project)
@@ -26,11 +27,15 @@ bool FlutterWindow::OnCreate() {
     return false;
   }
   RegisterPlugins(flutter_controller_->engine());
+  // Secondary engines must not call RegisterPlugins(): the printing plugin
+  // owns a process-wide MethodChannel unique_ptr. Re-registering it here
+  // destroys the main window channel, so barcode/PDF print crashes or no-ops
+  // after the queue display is opened.
   DesktopMultiWindowSetWindowCreatedCallback([](void *controller) {
     auto *flutter_view_controller =
         reinterpret_cast<flutter::FlutterViewController *>(controller);
     auto *registry = flutter_view_controller->engine();
-    RegisterPlugins(registry);
+    RegisterQueueDisplayPlugins(registry);
   });
   SetChildContent(flutter_controller_->view()->GetNativeWindow());
 

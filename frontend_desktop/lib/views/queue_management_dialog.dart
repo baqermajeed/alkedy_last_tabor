@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_screenutil/flutter_screenutil.dart';
 import 'package:get/get.dart';
@@ -71,6 +73,7 @@ class _QueueManagementDialogContentState
     extends State<QueueManagementDialogContent> {
   QueueController? _queueController;
   final TextEditingController _nameController = TextEditingController();
+  final TextEditingController _phoneController = TextEditingController();
   String? _editingId;
 
   static const _headerGradient = LinearGradient(
@@ -102,6 +105,7 @@ class _QueueManagementDialogContentState
   @override
   void dispose() {
     _nameController.dispose();
+    _phoneController.dispose();
     super.dispose();
   }
 
@@ -122,6 +126,7 @@ class _QueueManagementDialogContentState
     setState(() {
       _editingId = null;
       _nameController.clear();
+      _phoneController.clear();
     });
   }
 
@@ -231,17 +236,19 @@ class _QueueManagementDialogContentState
     if (controller == null) return;
 
     final name = _nameController.text;
+    final phone = _phoneController.text;
     if (_isEditing) {
-      if (controller.updatePatient(_editingId!, name)) {
+      if (controller.updatePatient(_editingId!, name, phone: phone)) {
         _resetForm();
       }
       return;
     }
 
     final assignedNumber = controller.nextNumber.value;
-    if (controller.addPatient(name)) {
+    if (controller.addPatient(name, phone: phone)) {
       final printedName = name.trim();
       _nameController.clear();
+      _phoneController.clear();
       _refresh();
       await QueueTicketPrintService.showPrintPrompt(
         name: printedName,
@@ -254,6 +261,7 @@ class _QueueManagementDialogContentState
     setState(() {
       _editingId = entry.id;
       _nameController.text = entry.name;
+      _phoneController.text = entry.phone;
     });
   }
 
@@ -279,6 +287,44 @@ class _QueueManagementDialogContentState
         backgroundColor: AppColors.error,
         colorText: AppColors.white,
         duration: const Duration(seconds: 6),
+      );
+    }
+  }
+
+  Future<void> _openWhatsApp(QueueEntry entry) async {
+    if (!entry.hasPhone) {
+      Get.snackbar(
+        'لا يوجد رقم',
+        'أضف رقم واتساب للمراجع من زر التعديل أولاً',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
+        duration: const Duration(seconds: 3),
+      );
+      return;
+    }
+
+    final number = entry.whatsAppNumber;
+    final message = Uri.encodeComponent(
+      'السلام عليكم ${entry.name}، '
+      'نود تذكيركم أن رقم دوركم ${entry.number} في الطابور. '
+      'يرجى التواجد أو إبلاغنا في حال التأخر. شكراً لكم.',
+    );
+    final url = 'https://wa.me/$number?text=$message';
+
+    try {
+      if (Platform.isWindows) {
+        await Process.run('cmd', ['/c', 'start', '', url], runInShell: false);
+      } else {
+        await Process.run('xdg-open', [url]);
+      }
+    } catch (e) {
+      Get.snackbar(
+        'تنبيه',
+        'تعذر فتح واتساب\n$e',
+        snackPosition: SnackPosition.BOTTOM,
+        backgroundColor: AppColors.error,
+        colorText: AppColors.white,
       );
     }
   }
@@ -567,13 +613,17 @@ class _QueueManagementDialogContentState
                   children: [
                     _buildNameField(),
                     SizedBox(height: 6.h),
+                    _buildPhoneField(),
+                    SizedBox(height: 6.h),
                     Center(child: _buildNumberBox()),
                   ],
                 )
               : Row(
                   crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    Expanded(child: _buildNameField()),
+                    Expanded(flex: 3, child: _buildNameField()),
+                    SizedBox(width: 8.w),
+                    Expanded(flex: 2, child: _buildPhoneField()),
                     SizedBox(width: 8.w),
                     _buildNumberBox(),
                   ],
@@ -757,6 +807,53 @@ class _QueueManagementDialogContentState
               ),
               hintTextDirection: TextDirection.rtl,
               alignLabelWithHint: true,
+            ),
+            onSubmitted: (_) => _submit(),
+          ),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildPhoneField() {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.center,
+      children: [
+        Text(
+          'رقم الواتساب',
+          style: _labelStyle,
+          textAlign: TextAlign.center,
+        ),
+        SizedBox(height: 3.h),
+        Container(
+          height: _fieldHeight,
+          alignment: Alignment.center,
+          decoration: BoxDecoration(
+            color: AppColors.white,
+            borderRadius: BorderRadius.circular(8.r),
+            border: Border.all(color: AppColors.divider),
+          ),
+          padding: EdgeInsets.symmetric(horizontal: 10.w),
+          child: TextField(
+            controller: _phoneController,
+            keyboardType: TextInputType.phone,
+            textAlign: TextAlign.center,
+            textDirection: TextDirection.ltr,
+            textAlignVertical: TextAlignVertical.center,
+            style: GoogleFonts.cairo(fontSize: 13.sp, height: 1.2),
+            cursorColor: AppColors.primary,
+            decoration: InputDecoration(
+              isDense: true,
+              border: InputBorder.none,
+              enabledBorder: InputBorder.none,
+              focusedBorder: InputBorder.none,
+              contentPadding: EdgeInsets.zero,
+              hintText: '07xxxxxxxxx',
+              hintStyle: GoogleFonts.cairo(
+                fontSize: 12.sp,
+                color: AppColors.textHint,
+                height: 1.2,
+              ),
             ),
             onSubmitted: (_) => _submit(),
           ),
@@ -1123,6 +1220,15 @@ class _QueueManagementDialogContentState
                       onTap: () => _callSurgeryEntry(entry),
                     ),
                   if (canCallSurgery) SizedBox(width: 4.w),
+                  _iconAction(
+                    icon: Icons.chat_rounded,
+                    color: const Color(0xFF25D366),
+                    tooltip: entry.hasPhone
+                        ? 'واتساب: ${entry.phone}'
+                        : 'واتساب — أضف رقم الهاتف أولاً',
+                    onTap: () => _openWhatsApp(entry),
+                  ),
+                  SizedBox(width: 4.w),
                   _iconAction(
                     icon: Icons.print_rounded,
                     color: const Color(0xFF145A32),

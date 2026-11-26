@@ -468,7 +468,21 @@ class QueueController extends GetxController {
     return null;
   }
 
-  bool addPatient(String name) {
+  String _normalizePhone(String phone) {
+    return phone.trim().replaceAll(RegExp(r'\s+'), '');
+  }
+
+  String? validatePhone(String phone) {
+    final trimmed = _normalizePhone(phone);
+    if (trimmed.isEmpty) return null;
+    final digits = trimmed.replaceAll(RegExp(r'[^\d]'), '');
+    if (digits.length < 10) {
+      return 'رقم الهاتف قصير جداً';
+    }
+    return null;
+  }
+
+  bool addPatient(String name, {String phone = ''}) {
     ensureNewDay();
     if (nextNumber.value > 100) {
       _showValidationError('تم الوصول إلى الحد الأقصى للطابور (100)');
@@ -478,6 +492,11 @@ class QueueController extends GetxController {
     final error = validateName(name);
     if (error != null) {
       _showValidationError(error);
+      return false;
+    }
+    final phoneError = validatePhone(phone);
+    if (phoneError != null) {
+      _showValidationError(phoneError);
       return false;
     }
 
@@ -491,6 +510,7 @@ class QueueController extends GetxController {
       id: DateTime.now().microsecondsSinceEpoch.toString(),
       number: nextNumber.value,
       name: trimmed,
+      phone: _normalizePhone(phone),
     );
     entries.add(entry);
     nextNumber.value++;
@@ -500,12 +520,19 @@ class QueueController extends GetxController {
     return true;
   }
 
-  bool updatePatient(String id, String name) {
+  bool updatePatient(String id, String name, {String? phone}) {
     ensureNewDay();
     final error = validateName(name);
     if (error != null) {
       _showValidationError(error);
       return false;
+    }
+    if (phone != null) {
+      final phoneError = validatePhone(phone);
+      if (phoneError != null) {
+        _showValidationError(phoneError);
+        return false;
+      }
     }
 
     final index = entries.indexWhere((e) => e.id == id);
@@ -517,7 +544,10 @@ class QueueController extends GetxController {
       return false;
     }
 
-    entries[index] = entries[index].copyWith(name: trimmed);
+    entries[index] = entries[index].copyWith(
+      name: trimmed,
+      phone: phone == null ? null : _normalizePhone(phone),
+    );
     _updateDisplaySnapshotName(id, trimmed);
     // التعديل يحدّث الاسم على شاشة العرض
     _saveToCache(syncDisplay: true);

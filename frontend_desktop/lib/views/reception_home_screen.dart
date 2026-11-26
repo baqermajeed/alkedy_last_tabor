@@ -799,9 +799,12 @@ class _ReceptionHomeScreenState extends State<ReceptionHomeScreen>
       );
 
       await Printing.layoutPdf(
+        name: 'باركود_مريض',
+        format: labelFormat,
         onLayout: (PdfPageFormat format) async => pdf.save(),
       );
     } catch (e) {
+      debugPrint('❌ [Reception] QR print failed: $e');
       Get.snackbar(
         'خطأ',
         'حدث خطأ أثناء طباعة الباركود',
@@ -7632,7 +7635,10 @@ class _ReceptionHomeScreenState extends State<ReceptionHomeScreen>
 
     final queue = Get.find<QueueController>();
     final assignedNumber = queue.nextNumber.value;
-    final ok = queue.addPatient(patient.name);
+    final ok = queue.addPatient(
+      patient.name,
+      phone: patient.phoneNumber,
+    );
     if (!ok) return;
 
     Get.snackbar(
